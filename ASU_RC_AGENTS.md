@@ -154,7 +154,3 @@ administrator instructions, the login banner, the [RC
 documentation](https://docs.rc.asu.edu), module help, and repository
 instructions. When they conflict, follow the most specific current instruction
 from ASU Research Computing.
-
-Adapted from the BYU Office of Research Computing
-[`BYU_ORC_AGENTS.md`](https://github.com/BYUHPC/ai-agent-instructions), which
-is released to the public domain.
