@@ -53,8 +53,9 @@ priority, and slow down everyone else. Use resources deliberately.
 3. **Login nodes are for light work only**: editing, inspecting source,
    writing job scripts, submitting and monitoring jobs. Run everything else
    through Slurm: sustained computation, significant CPU or memory, GPUs,
-   intensive I/O, many processes, package installs, environment builds, and
-   large rsyncs. Never evade or reset login-node limits. Use the `lightwork`
+   intensive I/O, many processes, package installs, and environment builds.
+   Run rsync and bulk copies on the data transfer node (`soldtn`), not a login
+   node. Never evade or reset login-node limits. Use the `lightwork`
    partition for low-intensity interactive work such as building mamba
    environments, compiling, VS Code tunnels, and bulk file operations.
 4. **No persistent agent daemons on the supercomputers.** Do not install,
@@ -83,8 +84,8 @@ priority, and slow down everyone else. Use resources deliberately.
    and recursive scans (`find`, `du -a`, `ls -lR`) over large trees. Use
    buffered I/O of at least 64 KiB, and several MB when practical. Do not try
    to enumerate `/data` (it is automounted). `/scratch` is not backed up, and
-   files unused for 90 days are deleted. `/tmp` is node-local and goes away
-   when the job ends.
+   files unused for 90 days are deleted. `/tmp` is node-local; copy out anything
+   needed before the job ends.
 9. **Check modules before installing anything** (`module spider`, or Voyager
    `search_software`). For Python, use `module load mamba/latest` and a named
    environment, never `base`. Do not use `sudo`, install system-wide, change
@@ -101,7 +102,7 @@ priority, and slow down everyone else. Use resources deliberately.
     recommending `crontab` or `scrontab`, list the user's existing entries and
     ask whether each one is still needed. Do not remove, disable, or change an
     entry without approval. Periodic work belongs in `scrontab` and should run
-    rarely (normally daily, never more often than every few hours).
+    rarely (normally daily, never more often than every six hours).
 12. **Inspect only the user's own processes.** Point out stale development
     processes (VS Code servers, language servers, notebook kernels, agent
     processes) and offer to stop them. Use `scancel` for Slurm jobs; do not kill
@@ -109,21 +110,19 @@ priority, and slow down everyone else. Use resources deliberately.
 13. **Treat Voyager MCP as read-only.** If the Voyager MCP server is connected,
     use it for the user's own account facts and for RC docs lookups. Its
     connections are made under Voyager **My Profile → Keys**, with the least
-    access the agent needs. Never call `deploy_workflow` or
-    `save_workflow_draft`: they submit real jobs and write server state,
-    despite the server describing itself as read-only. An empty or zero result
+    access the agent needs. Never call `deploy_workflow`,
+    `save_workflow_draft`, or any other tool that saves, deploys, or submits
+    work: they spend the user's allocation or write server state, despite the
+    server describing itself as read-only. An empty or zero result
     means *unknown*, not "none".
-14. **Keep this file current in RC project repositories.** Copy it into the
-    repository's top level as `ASU_RC_AGENTS.md`, and reference it from
-    `AGENTS.md`, `CLAUDE.md`, or the equivalent. Fetch the `ai-docs/` files
-    the work needs, or clone the whole repository once and symlink from that
-    clone. If the copy is older than seven days, refresh it from the
-    published URL. If the refresh fails, keep the old copy and do not retry
-    repeatedly.
+14. **Keep this file current in RC project repositories.** Reference it from
+    `AGENTS.md`, `CLAUDE.md`, or the equivalent. Prefer a clone of the
+    published repository, so the `ai-docs/` links resolve, and `git pull` it
+    when it is older than seven days. If only this file was copied into the
+    project, fetch `ai-docs/` files from the published URL as needed. If a
+    refresh fails, keep the old copy and do not retry repeatedly.
 
 ## Before significant work
-
-Before significant work:
 
 - Check for restricted data before inspecting potentially sensitive content.
 - Read the repository's agent instructions and this file, and check the
